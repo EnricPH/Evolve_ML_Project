@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def visualize_distribution(df, columns, scale=False):
+def distribution(df, columns, scale=False):
     """
     Visualize the distribution of numerical columns using histograms.
 
@@ -107,7 +107,7 @@ def visualize_distribution(df, columns, scale=False):
     plt.show()
 
 
-def country_visualization(df):
+def country(df):
     """
     Perform country-level analysis on retail data.
 
@@ -224,7 +224,7 @@ def country_visualization(df):
     plt.show()
   
 
-def weekday_visualization(df):
+def weekday(df):
     """
     Visualize total sales and cancellations per weekday.
 
@@ -271,6 +271,89 @@ def weekday_visualization(df):
     plt.xlabel("Weekday")
     plt.legend()
     plt.grid(alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+
+def customer(customer_df):
+    """
+    Perform customer-level analysis and visualization.
+
+    Visualizations include:
+    - Customer segmentation by spending (Low / Mid / High tier)
+    - Distribution of number of orders
+    - Distribution of total spending
+    - Repeat vs one-time customers
+
+    Parameters
+    ----------
+    customer_df : pandas.DataFrame
+
+    Required columns:
+        - TotalSpent
+        - NumOrders
+
+    Raises
+    ------
+    ValueError
+        If required columns are missing or data is invalid.
+    """
+
+    # -------- Validation --------
+    if customer_df.empty:
+        raise ValueError("Input DataFrame is empty")
+
+    required_cols = ["TotalSpent", "NumOrders"]
+    missing_cols = [col for col in required_cols if col not in customer_df.columns]
+    if missing_cols:
+        raise ValueError(f"Missing required columns: {missing_cols}")
+
+    df = customer_df.copy()
+
+    # -------- Customer segmentation (tiers) --------
+    df["SpendingTier"] = pd.qcut(
+        df["TotalSpent"],
+        q=3,
+        labels=["Low", "Mid", "High"]
+    )
+
+    tier_counts = df["SpendingTier"].value_counts().sort_index()
+
+    # -------- Repeat customers --------
+    df["IsRepeat"] = (df["NumOrders"] > 1).astype(int)
+    repeat_counts = df["IsRepeat"].value_counts()
+
+    # -------- Plot setup --------
+    plt.style.use("default")
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+    # 1. Customer tiers
+    sns.barplot(x=tier_counts.index, y=tier_counts.values, ax=axes[0,0])
+    axes[0,0].set_title("Customer Segmentation by Spending")
+    axes[0,0].set_ylabel("Number of Customers")
+    axes[0,0].set_xlabel("Spending Tier")
+    axes[0,0].grid(True, alpha=0.3)
+
+    # 2. Orders distribution
+    sns.histplot(np.log(df["NumOrders"]), bins=15, ax=axes[0,1])
+    axes[0,1].set_title("Distribution of Number of Orders (Log)")
+    axes[0,1].set_xlabel("Number of Orders")
+    axes[0,1].grid(True, alpha=0.3)
+
+    # 3. Spending distribution (log for visualization)
+    transformed_spending = np.log(df["TotalSpent"])
+    sns.histplot(transformed_spending, bins=30, ax=axes[1,0])
+    axes[1,0].set_title("Distribution of Customer Spending (Log)")
+    axes[1,0].set_xlabel("Transformed Spending")
+    axes[1,0].grid(True, alpha=0.3)
+
+    # 4. Repeat vs one-time
+    axes[1,1].pie(
+        repeat_counts,
+        labels=["One-time", "Repeat"],
+        autopct='%1.1f%%'
+    )
+    axes[1,1].set_title("Customer Types")
 
     plt.tight_layout()
     plt.show()
