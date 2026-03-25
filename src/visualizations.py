@@ -157,7 +157,7 @@ def country(df):
 
     # -------- Plot setup --------
     plt.style.use("default")
-    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 
     # 1. Market share by country (Pie)
     country_sales = df_sales.groupby("Country")["TotalPrice"].sum().sort_values(ascending=False)
