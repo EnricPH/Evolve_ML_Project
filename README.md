@@ -130,7 +130,7 @@ Additional analysis includes:
 
 ---
 
-### 7. Business Insights
+### 7. Business Insights and Next Steps
 
 #### Loyalty Actions (High Probability Customers)
 - Target frequent and recent buyers  

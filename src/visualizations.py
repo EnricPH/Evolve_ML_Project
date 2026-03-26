@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.express as px
 
 
 def distribution(df, columns, scale=False):
@@ -105,6 +106,61 @@ def distribution(df, columns, scale=False):
 
     plt.tight_layout()
     plt.show()
+
+def customer_map(df):
+    # Count occurrences of each country
+
+    customers_per_country = df.groupby("Customer ID")["Country"].first().value_counts()
+    country_counts = pd.DataFrame(customers_per_country.reset_index())
+    # Create choropleth map
+    fig = px.choropleth(
+        country_counts,
+        locations='Country',  # Column with country names
+        locationmode='country names',  # Use country names for matching
+        color='count',  # Column with values to display
+        hover_name='Country',
+        color_continuous_scale='Thermal_r',
+        labels={'count': 'Number of Occurrences'}
+    )
+
+    # Adjust layout to make map bigger and reduce whitespace
+    fig.update_layout(
+        autosize=False,
+        width=1200,  # Set width (adjust as needed)
+        height=800,  # Set height (adjust as needed)
+        margin=dict(l=0, r=0, t=40, b=0),  # Reduce margins (left, right, top, bottom)
+        geo=dict(
+            projection_type='natural earth',  # Better projection
+            showcoastlines=True,
+            coastlinecolor='rgba(0,0,0,0.3)',
+            showland=True,
+            landcolor='rgb(243, 243, 243)',
+            showocean=True,
+            oceancolor='rgb(230, 245, 255)',
+            showcountries=True,
+            countrycolor='rgba(0,0,0,0.2)',
+            showframe=False,  # Remove frame around map
+            bgcolor='rgba(0,0,0,0)'  # Transparent background
+        ),
+        title={
+            'text': 'Country Customer Density Map',
+            'x': 0.5,  # Center title
+            'xanchor': 'center',
+            'font': {'size': 20}
+        }
+    )
+
+    # Also adjust colorbar position and size
+    fig.update_coloraxes(
+        colorbar=dict(
+            title="Number of Customers",
+            title_side="right",
+            thickness=20,
+            len=0.8  # Colorbar length relative to plot
+        )
+    )
+
+    fig.show()
 
 def country(df):
     """

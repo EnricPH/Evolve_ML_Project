@@ -2,6 +2,7 @@ numpy
 pandas
 matplotlib
 seaborn
+plotly
 optuna
 scikit-learn
 xgboost
