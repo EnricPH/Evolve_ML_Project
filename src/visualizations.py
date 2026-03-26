@@ -106,7 +106,6 @@ def distribution(df, columns, scale=False):
     plt.tight_layout()
     plt.show()
 
-
 def country(df):
     """
     Perform country-level analysis on retail data.
@@ -223,7 +222,6 @@ def country(df):
     plt.tight_layout()
     plt.show()
   
-
 def weekday(df):
     """
     Visualize total sales and cancellations per weekday.
